@@ -47,7 +47,7 @@ class MCP230xxBase(GPIO.BaseGPIO):
         self.gppu = [0x00]*self.gpio_bytes  # Default to pullups disabled.
         self.gpio = [0x00]*self.gpio_bytes
         # Write current direction and pullup buffer state.
-        self.write_iodir()
+        #self.write_iodir()
         self.write_gppu()
 
 

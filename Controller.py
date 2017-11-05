@@ -74,11 +74,8 @@ def read_sensors():
 
 def main(stdscr):
   try:
-    for i in range(8):
-      relays.setup(i, GPIO.OUT)
-
-    for i in range(8):
-      relays.output(i, OFF)
+    relays.write_gpio([0xFF])
+    relays.write_iodir([0x00])
 
     r = threading.Thread(target=read_sensors)
 
@@ -207,9 +204,7 @@ def main(stdscr):
 
   finally:
     run = 0
-    for i in range(8):
-      relays.output(i, OFF)
-
+    relays.write_gpio([0xFF])
     exit(0)
 
 curses.wrapper(main)
