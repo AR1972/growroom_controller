@@ -89,8 +89,7 @@ def main(stdscr):
       k = stdscr.getch()
       if k == ord('q'):
         run = 0
-        for i in range(8):
-          relays.output(i, OFF)
+        relays.write_gpio([0xFF])
         exit(0)
       hectopascals = pascals / 100
       hours = strftime("%H", localtime())
