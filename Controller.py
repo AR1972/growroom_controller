@@ -41,7 +41,6 @@ def cooling_lockout():
   while run == 1 and i < 600:
     time.sleep(.5)
     i += 1
-
   cooling_enable = 1
 
 def dehumidifier_lockout():
@@ -51,7 +50,6 @@ def dehumidifier_lockout():
   while run == 1 and i < 600:
     time.sleep(.5)
     i += 1
-
   dehumidifier_enable = 1
 
 def read_sensors():
@@ -68,7 +66,6 @@ def read_sensors():
       ppm = 420
       full, ir = light_sensor.get_full_luminosity()
       lux = light_sensor.calculate_lux(full, ir)
-
   finally:
     exit(0)
 
@@ -76,9 +73,7 @@ def main(stdscr):
   try:
     relays.write_gpio([0xFF])
     relays.write_iodir([0x00])
-
     r = threading.Thread(target=read_sensors)
-
     global run
     global cooling_enable
     global dehumidifier_enable
@@ -87,7 +82,6 @@ def main(stdscr):
     global humidity
     global ppm
     global lux
-
     r.start()
     time.sleep(1) # give sensors a sec to start outputing data
     stdscr.nodelay(1)
@@ -97,9 +91,7 @@ def main(stdscr):
         run = 0
         for i in range(8):
           relays.output(i, OFF)
-
         exit(0)
-
       hectopascals = pascals / 100
       hours = strftime("%H", localtime())
       minutes = strftime("%M", localtime())
@@ -206,5 +198,4 @@ def main(stdscr):
     run = 0
     relays.write_gpio([0xFF])
     exit(0)
-
 curses.wrapper(main)
