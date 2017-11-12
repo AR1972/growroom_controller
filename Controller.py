@@ -83,7 +83,7 @@ def safety_lockout():
   # block turning on any other equipment
   if ppm > CO2_SAFETY:
     while bus_lock == 1:
-      time.sleep(.1)
+      time.sleep(.01)
     bus_lock = 1
     relays.output(EXHAUST, ON)
     bus_lock = 0
@@ -96,7 +96,7 @@ def safety_lockout():
   # turn off exaust fan and clear lock out flag
   if safety_enable == 1:
     while bus_lock == 1:
-      time.sleep(.1)
+      time.sleep(.01)
     bus_lock = 1
     relays.output(EXHAUST, OFF)
     bus_lock = 0
@@ -122,7 +122,7 @@ def read_sensors():
     global bus_lock
     while run == 1:
       while bus_lock == 1:
-        time.sleep(.1)
+        time.sleep(.01)
       bus_lock = 1
       degrees = air_sensor.read_temperature()
       pascals = air_sensor.read_pressure()
@@ -137,23 +137,23 @@ def read_sensors():
     pass
 
 def main(stdscr):
+  global run
+  global cooling_enable
+  global dehumidifier_enable
+  global degrees
+  global pascals
+  global humidity
+  global ppm
+  global lux
+  global safety_enable
+  global bus_lock
+  global co2_sensor_starting
+  global co2_restart_hour
   try:
     relays.write_gpio([0xFF])
     relays.write_iodir([0x00])
     r = threading.Thread(target=read_sensors)
     d1 = threading.Thread(target=co2_sensor_delay)
-    global run
-    global cooling_enable
-    global dehumidifier_enable
-    global degrees
-    global pascals
-    global humidity
-    global ppm
-    global lux
-    global safety_enable
-    global bus_lock
-    global co2_sensor_starting
-    global co2_restart_hour
     r.start()
     d1.start()
     # restart co2 sensor every 12 hours to avoid auto calabration
@@ -167,7 +167,7 @@ def main(stdscr):
       if k == ord('q'):
         run = 0
         while bus_lock == 1:
-          time.sleep(.1)
+          time.sleep(.01)
         bus_lock = 1
         relays.write_gpio([0xFF])
         co2_sensor.power_off()
@@ -184,7 +184,7 @@ def main(stdscr):
         d2 = threading.Thread(target=co2_sensor_delay)
         d2.start()
         while bus_lock == 1:
-          time.sleep(.1)
+          time.sleep(.01)
         bus_lock = 1
         co2_sensor.power_off()
         co2_sensor.power_on()
@@ -196,7 +196,7 @@ def main(stdscr):
 # lock the I2C bus ---------------------------------
 
       while bus_lock == 1:
-        time.sleep(.1)
+        time.sleep(.01)
       bus_lock = 1
 
 # circulation --------------------------------------
