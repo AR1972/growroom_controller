@@ -20,8 +20,8 @@
 # THE SOFTWARE.
 import math
 
-import Adafruit_GPIO as GPIO
-import Adafruit_GPIO.I2C as I2C
+import GPIO as GPIO
+import I2C as I2C
 
 
 class MCP230xxBase(GPIO.BaseGPIO):
@@ -36,7 +36,7 @@ class MCP230xxBase(GPIO.BaseGPIO):
         """
         # Create I2C device.
         if i2c is None:
-            import Adafruit_GPIO.I2C as I2C
+            import I2C as I2C
             i2c = I2C
         self._device = i2c.get_i2c_device(address, **kwargs)
         # Assume starting in ICON.BANK = 0 mode (sequential access).
