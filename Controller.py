@@ -141,7 +141,7 @@ def main(stdscr):
     relays.write_gpio([0xFF])
     relays.write_iodir([0x00])
     r = threading.Thread(target=read_sensors)
-    s1 = threading.Thread(target=co2_sensor_delay)
+    d1 = threading.Thread(target=co2_sensor_delay)
     global run
     global cooling_enable
     global dehumidifier_enable
@@ -155,7 +155,7 @@ def main(stdscr):
     global co2_sensor_starting
     global co2_restart_hour
     r.start()
-    s1.start()
+    d1.start()
     # restart co2 sensor every 12 hours to avoid auto calabration
     co2_restart_hour = localtime().tm_hour + 12
     if co2_restart_hour >= 24:
@@ -181,8 +181,8 @@ def main(stdscr):
 # restart co2 sensor to avoid auto calibration -----
 
       if hours == co2_restart_hour:
-        s2 = threading.Thread(target=co2_sensor_delay)
-        s2.start()
+        d2 = threading.Thread(target=co2_sensor_delay)
+        d2.start()
         while bus_lock == 1:
           time.sleep(.1)
         bus_lock = 1
@@ -299,9 +299,8 @@ def main(stdscr):
       stdscr.addstr(1, 0, 'Temp      = %0.3f deg C (%0.3f deg F)' % (degrees, ((degrees*9/5)+32)))
       stdscr.addstr(2, 0, 'Pressure  = %0.2f hPa' % hectopascals)
       stdscr.addstr(3, 0, 'Humidity  = %0.2f %%' % humidity)
-      stdscr.addstr(4, 0, 'Lux       = %s' % lux)
-      stdscr.addstr(5, 0, 'PPM       = %s' % ppm)
-      stdscr.addstr(6, 0, 'hour      = %s' % str(co2_restart_hour).zfill(2))
+      stdscr.addstr(4, 0, 'Light     = %s lux' % lux)
+      stdscr.addstr(5, 0, 'CO2       = %s ppm' % ppm)
       stdscr.addstr(7, 0, 'Press Q key to exit...')
       stdscr.refresh()
       time.sleep(.1)
