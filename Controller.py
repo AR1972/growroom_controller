@@ -163,11 +163,11 @@ def main(stdscr):
     time.sleep(1) # give sensors a sec to start outputing data
     stdscr.nodelay(1)
     while 1:
-      while bus_lock == 1:
-        time.sleep(.1)
       k = stdscr.getch()
       if k == ord('q'):
         run = 0
+        while bus_lock == 1:
+          time.sleep(.1)
         bus_lock = 1
         relays.write_gpio([0xFF])
         co2_sensor.power_off()
@@ -183,6 +183,8 @@ def main(stdscr):
       if hours == co2_restart_hour:
         s2 = threading.Thread(target=co2_sensor_delay)
         s2.start()
+        while bus_lock == 1:
+          time.sleep(.1)
         bus_lock = 1
         co2_sensor.power_off()
         co2_sensor.power_on()
@@ -193,6 +195,8 @@ def main(stdscr):
 
 # lock the I2C bus ---------------------------------
 
+      while bus_lock == 1:
+        time.sleep(.1)
       bus_lock = 1
 
 # circulation --------------------------------------
