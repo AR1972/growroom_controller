@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from BME280 import *
 from TSL2591 import *
 from MCP230xx import *
