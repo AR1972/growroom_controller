@@ -138,6 +138,8 @@ def read_sensors():
     lux = light_sensor.calculate_lux(full, ir)
   except:
     pass
+  finally:
+    pass
 
 def control_relays():
   global degrees
@@ -172,6 +174,7 @@ def control_relays():
   global cooling_enable
   global dehumidifier_enable
   global safety_enable
+  global co2_sensor_starting
 
 # circulation --------------------------------------
 
@@ -199,16 +202,16 @@ def control_relays():
 # light 2 timer ------------------------------------
 
   if LIGHT_2_FLOWER == 1:
-    if int(hours) >= 6 and int(minutes) >= 00:
-      if int(hours) <=  17 and int(minutes) <= 59:
+    if hours >= 6 and minutes >= 00:
+      if hours <=  17 and minutes <= 59:
         relays.output(LIGHT_2, ON)
       else:
         relays.output(LIGHT_2, OFF)
     else:
 	relays.output(LIGHT_2, OFF)
   else:
-    if int(hours) >= 6 and int(minutes) >= 00:
-      if int(hours) <= 23 and int(minutes) <= 59:
+    if hours >= 6 and minutes >= 00:
+      if hours <= 23 and minutes <= 59:
         relays.output(LIGHT_2, ON)
       else:
         relays.output(LIGHT_2, OFF)
@@ -344,7 +347,7 @@ def main(stdscr):
       stdscr.addstr(5, 0, 'CO2       = %s ppm' % ppm)
       stdscr.addstr(7, 0, 'Press Q key to exit...')
       stdscr.refresh()
-      time.sleep(.1)
+
   except Exception as e:
     z = e
     print z
