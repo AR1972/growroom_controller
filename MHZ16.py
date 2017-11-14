@@ -4,6 +4,7 @@ import time
 class MHZ16():
     cmd_measure = [0xFF,0x01,0x9C,0x00,0x00,0x00,0x00,0x00,0x63]
     ppm         = 0
+    i2c_addr    = 0x4D
 
     IOCONTROL   = 0X0E << 3
     IODIR       = 0X0A << 3
@@ -17,8 +18,7 @@ class MHZ16():
     TXLVL       = 0X08 << 3
     RXLVL       = 0X09 << 3
 
-    def __init__(self, i2c_addr):
-        self.i2c_addr = i2c_addr
+    def __init__(self):
         self.i2c      = smbus.SMBus(1)
 
     def begin(self):

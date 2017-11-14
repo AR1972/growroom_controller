@@ -40,7 +40,7 @@ bus_lock = 0
 run = 1
 air_sensor = BME280(p_mode=BME280_OSAMPLE_8, t_mode=BME280_OSAMPLE_2, h_mode=BME280_OSAMPLE_1, filter=BME280_FILTER_16)
 light_sensor = TSL2591()
-co2_sensor = MHZ16(0x4D)
+co2_sensor = MHZ16()
 co2_sensor.begin()
 co2_sensor.power_on()
 co2_sensor_starting = 1
