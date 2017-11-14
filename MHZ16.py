@@ -100,15 +100,14 @@ class MHZ16():
         return buf
 
     def power_off(self):
-      self.write_register(self.IODIR, 0x03)
-      state = self.read_register(self.IOSTATE)
-      state &= ~1
-      self.write_register(self.IOSTATE, state)
-      return self.read_register(self.IOSTATE)
+        self.write_register(self.IODIR, 0x03)
+        state = self.read_register(self.IOSTATE)
+        state &= ~1
+        self.write_register(self.IOSTATE, state)
 
     def power_on(self):
-      state = self.read_register(self.IOSTATE)
-      state |= 1
-      self.write_register(self.IOSTATE, state)
-      return self.read_register(self.IOSTATE)
-
+        state = self.read_register(self.IOSTATE)
+        state |= 1
+        self.write_register(self.IOSTATE, state)
+        
+        
