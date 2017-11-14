@@ -22,6 +22,21 @@ DEHUMIDIFIER = 7
 
 LIGHT_1_FLOWER = 0 # 1 = 12 hours, 0 = 18 hours
 LIGHT_2_FLOWER = 0 # 1 = 12 hours, 0 = 18 hours
+LIGHT_1_ON = 7
+LIGHT_2_ON = 6
+if LIGHT_1_FLOWER == 0:
+    LIGHT_1_OFF = LIGHT_1_ON + 18
+else:
+    LIGHT_1_OFF = LIGHT_1_ON + 12
+if LIGHT_1_OFF >= 24:
+    LIGHT_1_OFF = LIGHT_1_OFF - 24
+
+if LIGHT_2_FLOWER == 0:
+    LIGHT_2_OFF = LIGHT_2_ON + 18
+else:
+    LIGHT_2_OFF = LIGHT_2_ON + 12
+if LIGHT_2_OFF >= 24:
+    LIGHT_2_OFF = LIGHT_2_OFF - 24
 
 HEAT_HI = 21
 HEAT_LOW = 20
@@ -162,8 +177,10 @@ def control_relays():
     global CIRCULATION
     global CO2
     global DEHUMIDIFIER
-    global LIGHT_1_FLOWER
-    global LIGHT_2_FLOWER
+    global LIGHT_1_ON
+    global LIGHT_1_OFF
+    global LIGHT_2_ON
+    global LIGHT_2_OFF
     global HEAT_HI
     global HEAT_LOW
     global COOL_HI
@@ -184,41 +201,41 @@ def control_relays():
 
 # light 1 timer ------------------------------------
 
-        if LIGHT_1_FLOWER == 1:
-            if hours >= 6 and minutes >= 00:
-                if hours <=  17 and minutes <= 59:
+        if LIGHT_1_ON < LIGHT_1_OFF:
+            if hours >= LIGHT_1_ON and minutes >= 00:
+                if hours <= LIGHT_1_OFF-1 and minutes <= 59:
                     relays.output(LIGHT_1, ON)
                 else:
                     relays.output(LIGHT_1, OFF)
             else:
                 relays.output(LIGHT_1, OFF)
         else:
-            if hours >= 6 and minutes >= 00:
-                if hours <= 23 and minutes <= 59:
-                    relays.output(LIGHT_1, ON)
-                else:
+            if hours >= LIGHT_1_OFF and minutes >= 00:
+                if hours <= LIGHT_1_ON-1 and minutes <= 59:
                     relays.output(LIGHT_1, OFF)
+                else:
+                    relays.output(LIGHT_1, ON)
             else:
-                relays.output(LIGHT_1, OFF)
+                relays.output(LIGHT_1, ON)
 
 # light 2 timer ------------------------------------
 
-        if LIGHT_2_FLOWER == 1:
-            if hours >= 6 and minutes >= 00:
-                if hours <=  17 and minutes <= 59:
+        if LIGHT_2_ON < LIGHT_2_OFF:
+            if hours >= LIGHT_2_ON and minutes >= 00:
+                if hours <= LIGHT_2_OFF-1 and minutes <= 59:
                     relays.output(LIGHT_2, ON)
                 else:
                     relays.output(LIGHT_2, OFF)
             else:
                 relays.output(LIGHT_2, OFF)
         else:
-            if hours >= 6 and minutes >= 00:
-                if hours <= 23 and minutes <= 59:
-                    relays.output(LIGHT_2, ON)
-                else:
+            if hours >= LIGHT_2_OFF and minutes >= 00:
+                if hours <= LIGHT_2_ON-1 and minutes <= 59:
                     relays.output(LIGHT_2, OFF)
+                else:
+                    relays.output(LIGHT_2, ON)
             else:
-                relays.output(LIGHT_2, OFF)
+                relays.output(LIGHT_2, ON)
 
 # cooling -----------------------------------------
 
