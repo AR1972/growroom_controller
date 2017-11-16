@@ -122,8 +122,9 @@ def safety_lockout():
             while bus_lock == 1:
                 time.sleep(.01)
             bus_lock = 1
-            relays.output(EXHAUST, ON)
-            exhaust_on = 1
+            if exhaust_on == 0:
+                relays.output(EXHAUST, ON)
+                exhaust_on = 1
             bus_lock = 0
             safety_enable = 1
         i = 0
@@ -136,8 +137,9 @@ def safety_lockout():
             while bus_lock == 1:
                 time.sleep(.01)
             bus_lock = 1
-            relays.output(EXHAUST, OFF)
-            exhaust_on = 0
+            if exhaust_on == 1:
+                relays.output(EXHAUST, OFF)
+                exhaust_on = 0
             bus_lock = 0
             safety_enable = 0
     except:
@@ -230,75 +232,90 @@ def control_relays():
     try:
 # circulation --------------------------------------
 
-        relays.output(CIRCULATION, ON)
-        circulation_on = 1
+        if circulation_on == 0:
+            relays.output(CIRCULATION, ON)
+            circulation_on = 1
 
 # light 1 timer ------------------------------------
 
         if LIGHT_1_ON < LIGHT_1_OFF:
             if hours >= LIGHT_1_ON and minutes >= 00:
                 if hours <= LIGHT_1_OFF-1 and minutes <= 59:
-                    relays.output(LIGHT_1, ON)
-                    light1_on = 1
+                    if light1_on == 0:
+                        relays.output(LIGHT_1, ON)
+                        light1_on = 1
                 else:
+                    if light1_on == 1:
+                        relays.output(LIGHT_1, OFF)
+                        light1_on = 0
+            else:
+                if light1_on == 1:
                     relays.output(LIGHT_1, OFF)
                     light1_on = 0
-            else:
-                relays.output(LIGHT_1, OFF)
-                light1_on = 0
         else:
             if hours >= LIGHT_1_OFF and minutes >= 00:
                 if hours <= LIGHT_1_ON-1 and minutes <= 59:
-                    relays.output(LIGHT_1, OFF)
-                    light1_on = 0
+                    if light1_on == 1:
+                        relays.output(LIGHT_1, OFF)
+                        light1_on = 0
                 else:
+                    if light1_on == 0:
+                        relays.output(LIGHT_1, ON)
+                        light1_on = 1
+            else:
+                if light1_on == 0:
                     relays.output(LIGHT_1, ON)
                     light1_on = 1
-            else:
-                relays.output(LIGHT_1, ON)
-                light1_on = 1
 
 # light 2 timer ------------------------------------
 
         if LIGHT_2_ON < LIGHT_2_OFF:
             if hours >= LIGHT_2_ON and minutes >= 00:
                 if hours <= LIGHT_2_OFF-1 and minutes <= 59:
-                    relays.output(LIGHT_2, ON)
-                    light2_on = 1
+                    if light2_on == 0:
+                        relays.output(LIGHT_2, ON)
+                        light2_on = 1
                 else:
+                    if light2_on == 1:
+                        relays.output(LIGHT_2, OFF)
+                        light2_on = 0
+            else:
+                if light2_on == 1:
                     relays.output(LIGHT_2, OFF)
                     light2_on = 0
-            else:
-                relays.output(LIGHT_2, OFF)
-                light2_on = 0
         else:
             if hours >= LIGHT_2_OFF and minutes >= 00:
                 if hours <= LIGHT_2_ON-1 and minutes <= 59:
-                    relays.output(LIGHT_2, OFF)
-                    light2_on = 0
+                    if light2_on == 1:
+                        relays.output(LIGHT_2, OFF)
+                        light2_on = 0
                 else:
+                    if light2_on == 0:
+                        relays.output(LIGHT_2, ON)
+                        light2_on = 1
+            else:
+                if light2_on == 0:
                     relays.output(LIGHT_2, ON)
                     light2_on = 1
-            else:
-                relays.output(LIGHT_2, ON)
-                light2_on = 1
 
 # cooling -----------------------------------------
 
         if degrees > COOL_HI:
             if cooling_enable == 1:
                 if saftey_enable == 0 and delay == 0:
-                    relays.output(COOL, ON)
-                    cool_on = 1
-                    cooling_enable = 0
-                    c = threading.Thread(target=cooling_lockout)
-                    c.start()
-                    relays.output(EXHAUST, ON)
-                    exhaust_on = 1
-        elif degrees <= COOL_LOW:
+                    if cool_on == 0:
+                        relays.output(COOL, ON)
+                        cool_on = 1
+                        cooling_enable = 0
+                        if exhaust_on == 0:
+                            relays.output(EXHAUST, ON)
+                            exhaust_on = 1
+        elif degrees <= COOL_LOW and cool_on == 1:
             relays.output(COOL, OFF)
             cool_on = 0
-            if safety_enable == 0:
+            c = threading.Thread(target=cooling_lockout)
+            c.start()
+            if safety_enable == 0 and exhaust_on == 1:
                 relays.output(EXHAUST, OFF)
                 exhaust_on = 0
 
@@ -306,13 +323,16 @@ def control_relays():
 
         if degrees < HEAT_LOW:
             if safety_enable == 0 and delay == 0:
-                relays.output(HEAT, ON)
-                heat_on = 1
-                relays.output(EXHAUST, OFF)
-                exhaust_on = 0
+                if heat_on == 0:
+                    relays.output(HEAT, ON)
+                    heat_on = 1
+                if exhaust_on == 1:
+                    relays.output(EXHAUST, OFF)
+                    exhaust_on = 0
         elif degrees >= HEAT_HI:
-            relays.output(HEAT, OFF)
-            heat_on = 0
+            if heat_on == 1:
+                relays.output(HEAT, OFF)
+                heat_on = 0
 
 # humidity ------------------------------------------
 
@@ -322,21 +342,23 @@ def control_relays():
                     relays.output(DEHUMIDIFIER, ON)
                     dehumidifier_on = 1
                     dehumidifier_enable = 0
-                    h = threading.Thread(target=dehumidifier_lockout)
-                    h.start()
         elif humidity <= HUMIDITY_LOW:
             relays.output(DEHUMIDIFIER, OFF)
             dehumidifier_on = 0
+            h = threading.Thread(target=dehumidifier_lockout)
+            h.start()
 
 # CO2 ------------------------------------------------
 
         if ppm < CO2_LOW:
             if safety_enable == 0 and co2_sensor_starting == 0:
-                relays.output(CO2, ON)
-                co2_on = 1
+                if co2_on == 0:
+                    relays.output(CO2, ON)
+                    co2_on = 1
         elif ppm >= CO2_HIGH:
-            relays.output(CO2, OFF)
-            co2_on = 0
+            if co2_on == 1:
+                relays.output(CO2, OFF)
+                co2_on = 0
         if ppm > CO2_SAFETY:
             s = threading.Thread(target=safety_lockout)
             s.start()
