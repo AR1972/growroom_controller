@@ -426,6 +426,8 @@ def main(stdscr):
         curses.use_default_colors()
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
         curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_RED)
+        color_on = curses.color_pair(1)
+        color_off = curses.color_pair(2)
         while 1:
             k = stdscr.getch()
             if k == ord('q'):
@@ -468,37 +470,37 @@ def main(stdscr):
             stdscr.addstr(4, 0, 'Light     = %s lux' % lux)
             stdscr.addstr(5, 0, 'CO2       = %s ppm' % ppm)
             if light1_on == 0:
-                stdscr.addstr(7, 0, '[Light 1]', curses.color_pair(2))
+                stdscr.addstr(7, 0, '[Light 1]', color_off)
             else:
-                stdscr.addstr(7, 0, '[Light 1]', curses.color_pair(1))
+                stdscr.addstr(7, 0, '[Light 1]', color_on)
             if light2_on == 0:
-                stdscr.addstr(7, 10, '[Light 2]', curses.color_pair(2))
+                stdscr.addstr(7, 10, '[Light 2]', color_off)
             else:
-                stdscr.addstr(7, 10, '[Light 2]', curses.color_pair(1))
+                stdscr.addstr(7, 10, '[Light 2]', color_on)
             if exhaust_on == 0:
-                stdscr.addstr(7, 20, '[Exhaust]', curses.color_pair(2))
+                stdscr.addstr(7, 20, '[Exhaust]', color_off)
             else:
-                stdscr.addstr(7, 20, '[Exhaust]', curses.color_pair(1))
+                stdscr.addstr(7, 20, '[Exhaust]', color_on)
             if heat_on == 0:
-                stdscr.addstr(7, 30, '[Heat]', curses.color_pair(2))
+                stdscr.addstr(7, 30, '[Heat]', color_off)
             else:
-                stdscr.addstr(7, 30, '[Heat]', curses.color_pair(1))
+                stdscr.addstr(7, 30, '[Heat]', color_on)
             if cool_on == 0:
-                stdscr.addstr(7, 37, '[Cool]', curses.color_pair(2))
+                stdscr.addstr(7, 37, '[Cool]', color_off)
             else:
-                stdscr.addstr(7, 37, '[Cool]', curses.color_pair(1))
+                stdscr.addstr(7, 37, '[Cool]', color_on)
             if circulation_on == 0:
-                stdscr.addstr(7, 44, '[Circulation]', curses.color_pair(2))
+                stdscr.addstr(7, 44, '[Circulation]', color_off)
             else:
-                stdscr.addstr(7, 44, '[Circulation]', curses.color_pair(1))
+                stdscr.addstr(7, 44, '[Circulation]', color_on)
             if co2_on == 0:
-                stdscr.addstr(7, 58, '[CO2]', curses.color_pair(2))
+                stdscr.addstr(7, 58, '[CO2]', color_off)
             else:
-                stdscr.addstr(7, 58, '[CO2]', curses.color_pair(1))
+                stdscr.addstr(7, 58, '[CO2]', color_on)
             if dehumidifier_on == 0:
-                stdscr.addstr(7, 64, '[Dehumidifier]', curses.color_pair(2))
+                stdscr.addstr(7, 64, '[Dehumidifier]', color_off)
             else:
-                stdscr.addstr(7, 64, '[Dehumidifier]', curses.color_pair(1))
+                stdscr.addstr(7, 64, '[Dehumidifier]', color_on)
             stdscr.addstr(9, 0, 'Press Q key to exit...')
             stdscr.refresh()
 
