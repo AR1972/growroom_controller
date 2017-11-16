@@ -372,8 +372,15 @@ def co2_sensor_restart():
     global hours
     global co2_restart_hour
     global co2_sensor_restart_count
+    global run
     try:
         if hours == co2_restart_hour:
+# allow co2 cycle to finish before restarting the sensor
+# delay the sensor restart a maximum of 1 hour
+            while run == 1 and co2_on == 1:
+                time.sleep(.5)
+                if hours == co2_restart_hour + 1:
+                    break
             d = threading.Thread(target=co2_sensor_delay)
             d.start()
             co2_sensor.power_off()
@@ -454,7 +461,9 @@ def main(stdscr):
 
             read_sensors()
             control_relays()
-            co2_sensor_restart()
+            if hours == co2_restart_hour:
+                m = threading.Thread(target=co2_sensor_restart)
+                m.start()
 
 # unlock the I2C bus ---------------------------------
 
