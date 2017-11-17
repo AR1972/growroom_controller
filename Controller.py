@@ -383,8 +383,12 @@ def co2_sensor_restart():
                     break
             d = threading.Thread(target=co2_sensor_delay)
             d.start()
+            while bus_lock == 1:
+                time.sleep(.01)
+            bus_lock = 1
             co2_sensor.power_off()
             co2_sensor.power_on()
+            bus_lock = 0
             co2_sensor_restart_count = co2_sensor_restart_count + 1
             co2_restart_hour = localtime().tm_hour + 12
             if co2_restart_hour >= 24:
