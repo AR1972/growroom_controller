@@ -78,7 +78,7 @@ lux = 0
 hours = 0
 minutes = 0
 seconds = 0
-delay = 1
+start_delay = 1
 co2_sensor_restart_count = 0
 
 def cooling_lockout():
@@ -86,6 +86,7 @@ def cooling_lockout():
     global run
     i = 0
     while run == 1 and i < 600:
+        cooling_enable = 0
         time.sleep(.5)
         i += 1
     cooling_enable = 1
@@ -95,6 +96,7 @@ def dehumidifier_lockout():
     global run
     i = 0
     while run == 1 and i < 600:
+        dehumidifier_enable = 0
         time.sleep(.5)
         i += 1
     dehumidifier_enable = 1
@@ -159,13 +161,13 @@ def co2_sensor_delay():
 
 def startup_delay():
     global run
-    global delay
+    global start_delay
     i = 0
     while run == 1 and i <= 60:
-        delay = 1
+        start_delay = 1
         time.sleep(.5)
         i += 1
-    delay = 0
+    start_delay = 0
 
 def read_sensors():
     global degrees
@@ -220,7 +222,7 @@ def control_relays():
     global dehumidifier_enable
     global safety_enable
     global co2_sensor_starting
-    global delay
+    global start_delay
     global light1_on
     global light2_on
     global exhaust_on
@@ -302,17 +304,17 @@ def control_relays():
 
         if degrees > COOL_HI:
             if cooling_enable == 1:
-                if saftey_enable == 0 and delay == 0:
+                if saftey_enable == 0 and start_delay == 0:
                     if cool_on == 0:
                         relays.output(COOL, ON)
                         cool_on = 1
-                        cooling_enable = 0
                         if exhaust_on == 0:
                             relays.output(EXHAUST, ON)
                             exhaust_on = 1
         elif degrees <= COOL_LOW and cool_on == 1:
             relays.output(COOL, OFF)
             cool_on = 0
+            cooling_enable = 0
             c = threading.Thread(target=cooling_lockout)
             c.start()
             if safety_enable == 0 and exhaust_on == 1:
@@ -322,7 +324,7 @@ def control_relays():
 # heating ------------------------------------------
 
         if degrees < HEAT_LOW:
-            if safety_enable == 0 and delay == 0:
+            if safety_enable == 0 and start_delay == 0:
                 if heat_on == 0:
                     relays.output(HEAT, ON)
                     heat_on = 1
@@ -338,13 +340,14 @@ def control_relays():
 
         if humidity > HUMIDITY_HI:
             if dehumidifier_enable == 1:
-                if safety_enable == 0 and delay == 0:
-                    relays.output(DEHUMIDIFIER, ON)
-                    dehumidifier_on = 1
-                    dehumidifier_enable = 0
-        elif humidity <= HUMIDITY_LOW:
+                if safety_enable == 0 and start_delay == 0:
+                    if dehumidifier_on == 0:
+                        relays.output(DEHUMIDIFIER, ON)
+                        dehumidifier_on = 1
+        elif humidity <= HUMIDITY_LOW and dehumidifier_on == 1:
             relays.output(DEHUMIDIFIER, OFF)
             dehumidifier_on = 0
+            dehumidifier_enable = 0
             h = threading.Thread(target=dehumidifier_lockout)
             h.start()
 
@@ -420,7 +423,7 @@ def main(stdscr):
     global circulation_on
     global co2_on
     global dehumidifier_on
-    global delay
+    global start_delay
     global cooling_enable
     global dehumidifier_enable
     try:
@@ -503,29 +506,29 @@ def main(stdscr):
 
 # display exhaust status
 
-            if exhaust_on == 0:
+            if exhaust_on == 0 and start_delay == 0:
                 stdscr.addstr(7, 20, '[Exhaust]', color_off)
-            elif exhaust_on == 1:
+            elif exhaust_on == 1 and start_delay == 0:
                 stdscr.addstr(7, 20, '[Exhaust]', color_on)
-            elif delay == 1:
-                stdscr.addscr(7, 20, '[Exhaust]', color_delay)
+            elif start_delay == 1:
+                stdscr.addstr(7, 20, '[Exhaust]', color_delay)
 
 # display heating status
 
-            if heat_on == 0:
+            if heat_on == 0 and start_delay == 0:
                 stdscr.addstr(7, 30, '[Heat]', color_off)
-            elif heat_on == 1:
+            elif heat_on == 1 and start_delay == 0:
                 stdscr.addstr(7, 30, '[Heat]', color_on)
-            elif delay == 1:
+            elif start_delay == 1:
                 stdscr.addstr(7, 30, '[Heat]', color_delay)
 
 # display cooling status
 
-            if cool_on == 0 and cooling_enable == 1:
+            if cool_on == 0 and cooling_enable == 1 and start_delay == 0:
                 stdscr.addstr(7, 37, '[Cool]', color_off)
-            elif cooling_on == 1 and cooling_enable == 1:
+            elif cool_on == 1 and cooling_enable == 1 and start_delay == 0:
                 stdscr.addstr(7, 37, '[Cool]', color_on)
-            elif cooling_enable == 0 or delay == 1:
+            elif  cooling_enable == 0 or start_delay == 1:
                 stdscr.addstr(7, 37, '[Cool]', color_delay)
 
 # display circulation status
@@ -546,11 +549,11 @@ def main(stdscr):
 
 # display dehumidifier status
 
-            if dehumidifier_on == 0 and dehumidifier_enable == 1:
+            if dehumidifier_on == 0 and dehumidifier_enable == 1 and start_delay == 0:
                 stdscr.addstr(7, 64, '[Dehumidifier]', color_off)
-            elif dehumidifier_on == 1 and dehumidifier_enable == 1:
+            elif dehumidifier_on == 1 and dehumidifier_enable == 1 and start_delay == 0:
                 stdscr.addstr(7, 64, '[Dehumidifier]', color_on)
-            elif dehumidifier_enable == 0 or delay == 1:
+            elif dehumidifier_enable == 0 or start_delay == 1:
                 stdscr.addstr(7, 64, '[Dehumidifier]', color_delay)
 
             stdscr.addstr(9, 0, 'Press Q key to exit...')
