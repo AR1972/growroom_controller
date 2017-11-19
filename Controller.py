@@ -402,17 +402,14 @@ def co2_sensor_restart():
 
 def main(stdscr):
     global run
-    global cooling_enable
-    global dehumidifier_enable
     global degrees
     global pascals
     global humidity
     global ppm
     global lux
-    global safety_enable
     global bus_lock
-    global co2_sensor_starting
     global co2_restart_hour
+    global co2_sensor_starting
     global hours
     global minutes
     global light1_on
@@ -423,6 +420,9 @@ def main(stdscr):
     global circulation_on
     global co2_on
     global dehumidifier_on
+    global delay
+    global cooling_enable
+    global dehumidifier_enable
     try:
         relays.write_gpio([0xFF])
         relays.write_iodir([0x00])
@@ -439,8 +439,10 @@ def main(stdscr):
         curses.use_default_colors()
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
         curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_RED)
+        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_YELLOW)
         color_on = curses.color_pair(1)
         color_off = curses.color_pair(2)
+        color_delay = curses.color_pair(3)
         while 1:
             k = stdscr.getch()
             if k == ord('q'):
@@ -484,38 +486,73 @@ def main(stdscr):
             stdscr.addstr(3, 0, 'Humidity  = %0.2f %%' % humidity)
             stdscr.addstr(4, 0, 'Light     = %s lux' % lux)
             stdscr.addstr(5, 0, 'CO2       = %s ppm' % ppm)
+
+# display light 1 status
+
             if light1_on == 0:
                 stdscr.addstr(7, 0, '[Light 1]', color_off)
             else:
                 stdscr.addstr(7, 0, '[Light 1]', color_on)
+
+# display light 2 status
+
             if light2_on == 0:
                 stdscr.addstr(7, 10, '[Light 2]', color_off)
             else:
                 stdscr.addstr(7, 10, '[Light 2]', color_on)
+
+# display exhaust status
+
             if exhaust_on == 0:
                 stdscr.addstr(7, 20, '[Exhaust]', color_off)
-            else:
+            elif exhaust_on == 1:
                 stdscr.addstr(7, 20, '[Exhaust]', color_on)
+            elif delay == 1:
+                stdscr.addscr(7, 20, '[Exhaust]', color_delay)
+
+# display heating status
+
             if heat_on == 0:
                 stdscr.addstr(7, 30, '[Heat]', color_off)
-            else:
+            elif heat_on == 1:
                 stdscr.addstr(7, 30, '[Heat]', color_on)
-            if cool_on == 0:
+            elif delay == 1:
+                stdscr.addstr(7, 30, '[Heat]', color_delay)
+
+# display cooling status
+
+            if cool_on == 0 and cooling_enable == 1:
                 stdscr.addstr(7, 37, '[Cool]', color_off)
-            else:
+            elif cooling_on == 1 and cooling_enable == 1:
                 stdscr.addstr(7, 37, '[Cool]', color_on)
+            elif cooling_enable == 0 or delay == 1:
+                stdscr.addstr(7, 37, '[Cool]', color_delay)
+
+# display circulation status
+
             if circulation_on == 0:
                 stdscr.addstr(7, 44, '[Circulation]', color_off)
             else:
                 stdscr.addstr(7, 44, '[Circulation]', color_on)
-            if co2_on == 0:
+
+# display CO2 status
+
+            if co2_on == 0 and co2_sensor_starting == 0:
                 stdscr.addstr(7, 58, '[CO2]', color_off)
-            else:
+            elif co2_on == 1 and co2_sensor_starting == 0:
                 stdscr.addstr(7, 58, '[CO2]', color_on)
-            if dehumidifier_on == 0:
+            elif co2_sensor_starting == 1:
+                stdscr.addstr(7, 58, '[CO2]', color_delay)
+
+# display dehumidifier status
+
+            if dehumidifier_on == 0 and dehumidifier_enable == 1:
                 stdscr.addstr(7, 64, '[Dehumidifier]', color_off)
-            else:
+            elif dehumidifier_on == 1 and dehumidifier_enable == 1:
                 stdscr.addstr(7, 64, '[Dehumidifier]', color_on)
+            elif dehumidifier_enable == 0 or delay == 1:
+                stdscr.addstr(7, 64, '[Dehumidifier]', color_delay)
+
             stdscr.addstr(9, 0, 'Press Q key to exit...')
             stdscr.refresh()
 
