@@ -372,6 +372,8 @@ def co2_sensor_restart():
     global hours
     global co2_restart_hour
     global co2_sensor_restart_count
+    global co2_on
+    global bus_lock
     global run
     try:
         if hours == co2_restart_hour:
