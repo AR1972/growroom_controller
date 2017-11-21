@@ -65,8 +65,6 @@ run = 1
 air_sensor = BME280(p_mode=BME280_OSAMPLE_8, t_mode=BME280_OSAMPLE_2, h_mode=BME280_OSAMPLE_1, filter=BME280_FILTER_16)
 light_sensor = TSL2591()
 co2_sensor = MHZ16()
-co2_sensor.begin()
-co2_sensor.power_on()
 co2_sensor_starting = 1
 co2_restart_hour = 0
 relays = MCP23017()
@@ -433,6 +431,7 @@ def main(stdscr):
     try:
         relays.write_gpio([0xFF])
         relays.write_iodir([0x00])
+        co2_sensor.power_on()
         d = threading.Thread(target=co2_sensor_delay)
         q = threading.Thread(target=startup_delay)
         d.start()

@@ -20,29 +20,17 @@ class MHZ16():
 
     def __init__(self):
         self.i2c      = smbus.SMBus(1)
-
-    def begin(self):
         try:
+            # resets the UART throws and exception because the chip responds with a NACK
             self.write_register(self.IOCONTROL, 0x08)
         except IOError:
             pass
 
-        trial = 10
-
-        while trial > 0:
-            trial = trial - 1
-
-            try:
-                self.write_register(self.FCR, 0x07)
-                self.write_register(self.LCR, 0x83)
-                self.write_register(self.DLL, 0x60)
-                self.write_register(self.DLH, 0x00)
-                self.write_register(self.LCR, 0x03)
-                return True
-            except IOError:
-                pass
-
-        return False
+        self.write_register(self.FCR, 0x07)
+        self.write_register(self.LCR, 0x83)
+        self.write_register(self.DLL, 0x60)
+        self.write_register(self.DLH, 0x00)
+        self.write_register(self.LCR, 0x03)
 
     def measure(self):
         try:
@@ -109,5 +97,3 @@ class MHZ16():
         state = self.read_register(self.IOSTATE)
         state |= 1
         self.write_register(self.IOSTATE, state)
-        
-        
