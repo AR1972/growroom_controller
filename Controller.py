@@ -80,6 +80,7 @@ minutes = 0
 seconds = 0
 start_delay = 1
 co2_sensor_restart_count = 0
+co2_restart_wait = 0
 
 def cooling_lockout():
     global cooling_enable
@@ -378,6 +379,7 @@ def co2_sensor_restart():
     global co2_on
     global bus_lock
     global run
+    global co2_restart_wait
     try:
         if hours == co2_restart_hour:
 # allow co2 cycle to finish before restarting the sensor
@@ -398,6 +400,7 @@ def co2_sensor_restart():
             co2_restart_hour = localtime().tm_hour + 12
             if co2_restart_hour >= 24:
                 co2_restart_hour = co2_restart_hour - 24
+            co2_restart_wait = 0
     except:
         pass
     finally:
@@ -426,6 +429,7 @@ def main(stdscr):
     global start_delay
     global cooling_enable
     global dehumidifier_enable
+    global co2_restart_wait
     try:
         relays.write_gpio([0xFF])
         relays.write_iodir([0x00])
@@ -472,7 +476,8 @@ def main(stdscr):
 
             read_sensors()
             control_relays()
-            if hours == co2_restart_hour:
+            if hours == co2_restart_hour and co2_sensor_starting == 0 and co2_restart_wait == 0:
+                co2_restart_wait = 1
                 m = threading.Thread(target=co2_sensor_restart)
                 m.start()
 
